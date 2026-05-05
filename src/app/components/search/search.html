@@ -1,0 +1,39 @@
+<article class="w-full max-w-xl relative">
+    <form role="search" class="relative group" (submit)="$event.preventDefault()">
+        <label for="city-input" class="sr-only">Buscar ciudad</label>
+        <input type="text" id="city-input" [formControl]="searchControl" placeholder="Buscar ciudad"
+            class="w-full bg-gray-100 text-gray-700 h-10 px-4 pr-10 rounded-full border-none focus:bg-white outline-none placeholder-gray-400 text-sm transition-all duration-300 focus:scale-[1.02] shadow-sm focus:shadow-md" />
+        <button
+            class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center text-gray-400 hover:text-blue-600"
+            type="button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                <path d="M21 21l-6 -6" />
+            </svg>
+        </button>
+    </form>
+
+    @if (results.length > 0 || isLoading) {
+    <section
+        class="absolute top-full left-0 w-full bg-white border border-gray-100 rounded-lg shadow-xl mt-2 overflow-hidden"
+        style="z-index: 9999;">
+        <p
+            class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
+            Resultados
+        </p>
+        <ul class="max-h-60 overflow-y-auto px-4 py-2">
+            @if (isLoading) {
+            <li class="p-4 text-center text-blue-500 text-sm animate-pulse">Buscando...</li>
+            }
+            @for (city of results; track city.name) {
+            <li class="block my-1 py-2 px-2 cursor-pointer hover:bg-gray-50 rounded text-sm text-gray-700"
+                (mousedown)="selectCity(city)">
+                {{ city.name }}{{ city.state ? ', ' + city.state : '' }} ({{ city.country }})
+            </li>
+            }
+        </ul>
+    </section>
+    }
+</article>
