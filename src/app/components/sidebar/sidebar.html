@@ -1,0 +1,48 @@
+<div class="fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity" [class.hidden]="!isOpen"
+    (click)="closed.emit()">
+</div>
+
+<aside
+    class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col"
+    [class.-translate-x-full]="!isOpen" [class.translate-x-0]="isOpen">
+
+    <div class="flex flex-col items-center border-b border-gray-100 pb-4">
+        <img src="assets/logotipo.jpg" alt="Logo" class="w-12 h-12 mt-4 rounded-full shadow-sm"
+            onerror="this.style.display='none'">
+        <h2 class="text-center mt-2 text-lg font-bold text-[#003399]">WeatherTravel</h2>
+    </div>
+
+    <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+
+        <section>
+            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Favorites</h3>
+            <ul class="space-y-1">
+                <ng-container *ngIf="favorites$ | async as favs">
+                    <li *ngIf="favs.length === 0" class="text-xs text-gray-400 px-2 italic">No favorites</li>
+                    <li *ngFor="let city of favs">
+                        <button type="button" (click)="selectCity(city)"
+                            class="w-full text-left flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            <span class="truncate">{{ city.name }}</span>
+                        </button>
+                    </li>
+                </ng-container>
+            </ul>
+        </section>
+
+        <section>
+            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">History</h3>
+            <ul class="space-y-1">
+                <ng-container *ngIf="history$ | async as hist">
+                    <li *ngIf="hist.length === 0" class="text-xs text-gray-400 px-2 italic">No history</li>
+                    <li *ngFor="let city of hist | slice:0:10">
+                        <button type="button" (click)="selectCity(city)"
+                            class="w-full text-left flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            <span class="truncate">{{ city.name }}</span>
+                        </button>
+                    </li>
+                </ng-container>
+            </ul>
+        </section>
+
+    </nav>
+</aside>

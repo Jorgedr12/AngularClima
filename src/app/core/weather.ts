@@ -21,24 +21,26 @@ export class Weather {
 
   searchCity(query: string): Observable<any[]> {
     const url = `https://api.openweathermap.org/geo/1.0/direct?q=${query}&limit=5&appid=${this.API_KEY}`;
-    return this.http.get<any[]>(url).pipe(catchError(this.handleError));
+    return this.http.get<any[]>(url).pipe(catchError((e) => this.handleError(e)));
   }
 
+  // Devuelve Kelvin (sin units=metric) para que la pipe lo convierta
   getCurrentWeather(lat: number, lon: number): Observable<any> {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&units=metric&lang=es`;
-    return this.http.get<any>(url).pipe(catchError(this.handleError));
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=es`;
+    return this.http.get<any>(url).pipe(catchError((e) => this.handleError(e)));
   }
 
+  // Devuelve Kelvin también para consistencia con la pipe
   getForecast(lat: number, lon: number): Observable<any> {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&units=metric&lang=es`;
-    return this.http.get<any>(url).pipe(catchError(this.handleError));
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=es`;
+    return this.http.get<any>(url).pipe(catchError((e) => this.handleError(e)));
   }
 
   addToHistory(city: { name: string; lat: number; lon: number }) {
     let history = this.getHistory();
     history = history.filter(item => item.name !== city.name);
     history.unshift(city);
-    history = history.slice(0, 10);
+    history = history.slice(0, 5); // Cache de últimas 5
     localStorage.setItem(this.HISTORY_KEY, JSON.stringify(history));
     this.historySubject.next(history);
   }
@@ -60,26 +62,36 @@ export class Weather {
     return this.getFavorites().some(c => c.name === name);
   }
 
+  migrateStorage() {
+    localStorage.removeItem('weather_cache');
+  }
+
   private getHistory(): any[] {
-    const cache = localStorage.getItem(this.HISTORY_KEY);
-    return cache ? JSON.parse(cache) : [];
+    try {
+      const cache = localStorage.getItem(this.HISTORY_KEY);
+      const parsed = cache ? JSON.parse(cache) : [];
+      return parsed.filter((c: any) => c.lat != null && c.lon != null);
+    } catch { return []; }
   }
 
   private getFavorites(): any[] {
-    const cache = localStorage.getItem(this.FAVORITES_KEY);
-    return cache ? JSON.parse(cache) : [];
+    try {
+      const cache = localStorage.getItem(this.FAVORITES_KEY);
+      const parsed = cache ? JSON.parse(cache) : [];
+      return parsed.filter((c: any) => c.lat != null && c.lon != null);
+    } catch { return []; }
   }
 
   private handleError(error: HttpErrorResponse) {
-    let errorMessage = 'Ocurrió un error desconocido.';
+    let errorMessage = 'An unknown error occurred.';
     if (!navigator.onLine) {
-      errorMessage = 'No tienes conexión a internet.';
+      errorMessage = 'You are not connected to the internet.';
     } else if (error.status === 0) {
-      errorMessage = 'No se pudo conectar al servidor. Intenta más tarde.';
+      errorMessage = 'Could not connect to the server. Please try again later.';
     } else if (error.status === 404) {
-      errorMessage = 'Ciudad no encontrada. Verifica el nombre e intenta de nuevo.';
+      errorMessage = 'City not found. Please verify the name and try again.';
     } else if (error.status === 401) {
-      errorMessage = 'API key inválida. Revisa la configuración.';
+      errorMessage = 'Invalid API key. Please check your configuration.';
     } else if (error.error?.message) {
       errorMessage = `Error: ${error.error.message}`;
     }

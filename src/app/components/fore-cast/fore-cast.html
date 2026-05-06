@@ -1,0 +1,23 @@
+<section *ngIf="days.length > 0">
+  <h2 class="text-lg font-bold text-gray-800 mb-3 ml-1">Next Days</h2>
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-200 divide-y divide-gray-100">
+    <div
+      *ngFor="let day of days"
+      class="grid grid-cols-3 sm:grid-cols-4 items-center py-4 px-4 hover:translate-x-2 transition-transform duration-300 ease-in-out cursor-default">
+
+      <div class="text-gray-700 font-medium capitalize text-sm">{{ day.label }}</div>
+
+      <div class="flex items-center gap-1 text-sm">
+        <span class="font-bold text-gray-900">{{ day.tempMaxK | kelvinToCelsius }}°</span>
+        <span class="text-gray-400">/</span>
+        <span class="text-gray-500">{{ day.tempMinK | kelvinToCelsius }}°</span>
+      </div>
+
+      <div class="flex items-center gap-2 justify-end sm:justify-center">
+        <img [src]="getIconUrl(day.icon)" alt="icono" class="w-8 h-8">
+        <span class="text-gray-700 text-sm capitalize truncate hidden sm:block">{{ day.desc }}</span>
+      </div>
+
+    </div>
+  </div>
+</section>

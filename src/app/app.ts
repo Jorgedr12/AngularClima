@@ -1,43 +1,50 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Weather } from './core/weather';
 import { Search } from './components/search/search';
+import { Sidebar } from './components/sidebar/sidebar';
+import { WeatherCard } from './components/weather-card/weather-card';
+import { Forecast } from './components/fore-cast/fore-cast';
 import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-root',
-  imports: [CommonModule, Search],
+  standalone: true,
+  imports: [CommonModule, Search, Sidebar, WeatherCard, Forecast],
   templateUrl: './app.html',
   styleUrl: './app.css',
 })
-export class App implements OnInit {
+export class App {
   private weatherService = inject(Weather);
+  private cdr = inject(ChangeDetectorRef);
 
   currentWeather: any = null;
   forecastDays: any[] = [];
-  history$ = this.weatherService.history$;
-  favorites$ = this.weatherService.favorites$;
-
   errorMsg: string | null = null;
   cityName: string | null = null;
   cityObj: { name: string; lat: number; lon: number } | null = null;
   isFavorite = false;
   recommendations: string[] = [];
   sidebarOpen = false;
+  isLoading = false;
 
-  ngOnInit() {}
+  constructor() {
+    this.weatherService.migrateStorage();
+  }
 
   onCitySelected(city: any) {
     const displayName = `${city.name}${city.state ? ', ' + city.state : ''}${city.country ? ' (' + city.country + ')' : ''}`;
     this.fetchWeather(displayName, city.lat, city.lon);
   }
 
-  /** Llamado desde historial/favoritos (city.name ya está formateado) */
-  loadCity(city: { name: string; lat: number; lon: number }) {
+  onSidebarCitySelected(city: { name: string; lat: number; lon: number }) {
     this.fetchWeather(city.name, city.lat, city.lon);
-    if (window.innerWidth < 1024) {
-      this.closeSidebar();
-    }
+    this.sidebarOpen = false;
+  }
+
+  toggleFavorite() {
+    if (!this.cityObj) return;
+    this.isFavorite = this.weatherService.toggleFavorite(this.cityObj);
   }
 
   private fetchWeather(displayName: string, lat: number, lon: number) {
@@ -46,6 +53,8 @@ export class App implements OnInit {
     this.currentWeather = null;
     this.forecastDays = [];
     this.recommendations = [];
+    this.isLoading = true;
+    this.cdr.detectChanges();
 
     this.cityObj = { name: displayName, lat, lon };
     this.weatherService.addToHistory(this.cityObj);
@@ -56,103 +65,62 @@ export class App implements OnInit {
       forecast: this.weatherService.getForecast(lat, lon),
     }).subscribe({
       next: ({ current, forecast }) => {
+        this.isLoading = false;
         this.currentWeather = current;
         this.forecastDays = this.buildDailyForecast(forecast.list);
         this.recommendations = this.buildRecommendations(
           current.weather[0].id,
           current.weather[0].icon
         );
+        this.cdr.detectChanges();
       },
       error: (err) => {
+        this.isLoading = false;
         this.errorMsg = err.message;
+        this.cdr.detectChanges();
       },
     });
   }
 
-  toggleFavorite() {
-    if (!this.cityObj) return;
-    this.isFavorite = this.weatherService.toggleFavorite(this.cityObj);
-  }
-
-  getWindKmh(speedMs: number): string {
-    return (speedMs * 3.6).toFixed(1) + ' km/h';
-  }
-
-  getWeatherIconUrl(icon: string): string {
-    return `https://openweathermap.org/img/wn/${icon}@4x.png`;
-  }
-
-  getForecastIconUrl(icon: string): string {
-    return `https://openweathermap.org/img/wn/${icon}.png`;
-  }
-
-  toggleSidebar() {
-    this.sidebarOpen = !this.sidebarOpen;
-  }
-
-  closeSidebar() {
-    this.sidebarOpen = false;
-  }
-
+  // Guarda temperaturas en Kelvin — la pipe las convierte en el template
   private buildDailyForecast(list: any[]): any[] {
     if (!list) return [];
-
     const grouped: { [date: string]: any[] } = {};
     for (const item of list) {
       const date = item.dt_txt.split(' ')[0];
       if (!grouped[date]) grouped[date] = [];
       grouped[date].push(item);
     }
-
-    const dates = Object.keys(grouped).slice(0, 5);
-
-    return dates.map(date => {
+    return Object.keys(grouped).slice(0, 5).map(date => {
       const dayData = grouped[date];
-      let max = -Infinity, min = Infinity;
+      let maxK = -Infinity, minK = Infinity;
       for (const item of dayData) {
-        if (item.main.temp_max > max) max = item.main.temp_max;
-        if (item.main.temp_min < min) min = item.main.temp_min;
+        if (item.main.temp_max > maxK) maxK = item.main.temp_max;
+        if (item.main.temp_min < minK) minK = item.main.temp_min;
       }
       const mid = dayData[Math.floor(dayData.length / 2)];
       const dateObj = new Date(mid.dt * 1000);
-      const dayLabel = dateObj.toLocaleDateString('es-ES', { weekday: 'short' });
-      const dayNum = dateObj.getDate();
       return {
-        label: `${dayLabel} ${dayNum}`,
-        tempMax: Math.round(max),
-        tempMin: Math.round(min),
+        label: `${dateObj.toLocaleDateString('en-US', { weekday: 'short' })} ${dateObj.getDate()}`,
+        tempMaxK: maxK,
+        tempMinK: minK,
         icon: mid.weather[0].icon,
         desc: mid.weather[0].description,
       };
     });
   }
 
-  private buildRecommendations(climaId: number, icon: string): string[] {
-    const esDeDia = icon.includes('d');
-    const grupo = Math.floor(climaId / 100);
-
-    switch (grupo) {
-      case 2:
-        return esDeDia
-          ? ['Refúgiate en interiores', 'Evita áreas abiertas']
-          : ['Quédate en casa/hotel', 'Cena en el interior'];
+  private buildRecommendations(weatherId: number, icon: string): string[] {
+    const isDay = icon.includes('d');
+    const group = Math.floor(weatherId / 100);
+    switch (group) {
+      case 2: return isDay ? ['Take shelter indoors', 'Avoid open areas'] : ['Stay indoors or at the hotel', 'Dine inside'];
       case 3:
-      case 5:
-        return esDeDia
-          ? ['Usa paraguas', 'Museos o cines', 'Ropa impermeable']
-          : ['Noche de descanso', 'Evita conducir'];
-      case 6:
-        return esDeDia
-          ? ['Ropa térmica', 'Paseo con cuidado', 'Bebidas calientes']
-          : ['Mantente abrigado', 'Cena caliente', 'Evita el exterior'];
-      case 7:
-        return ['Baja visibilidad', 'Conduce con precaución', 'Usa luces altas'];
-      case 8:
-        return esDeDia
-          ? ['Actividades al aire libre', 'Caminata o parque']
-          : ['Cena en terraza', 'Observar estrellas', 'Paseo nocturno'];
-      default:
-        return ['Disfruta el día sin importar el clima'];
+      case 5: return isDay ? ['Bring an umbrella', 'Visit museums or cinemas', 'Wear waterproof clothing'] : ['Rest night indoors', 'Avoid driving'];
+      case 6: return isDay ? ['Wear thermal clothing', 'Walk carefully', 'Warm drinks recommended'] : ['Keep warm', 'Have a hot meal', 'Avoid going outside'];
+      case 7: return ['Low visibility', 'Drive with caution', 'Use high beams'];
+      case 8: return isDay ? ['Great for outdoor activities', 'Go for a walk or visit a park'] : ['Dine on a terrace', 'Stargazing night', 'Evening stroll'];
+      default: return ['Enjoy your day regardless of the weather'];
     }
   }
 }

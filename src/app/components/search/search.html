@@ -1,9 +1,17 @@
 <article class="w-full max-w-xl relative">
     <form role="search" class="relative group" (submit)="$event.preventDefault()">
-        <label for="city-input" class="sr-only">Buscar ciudad</label>
-        <input type="text" id="city-input" [formControl]="searchControl" placeholder="Buscar ciudad"
+        <label for="city-input" class="sr-only">Search city</label>
+        <input type="text" id="city-input" [formControl]="searchControl" placeholder="Search city" autocomplete="off"
+            (blur)="onBlur()" (focus)="showDropdown = results.length > 0 || isLoading"
             class="w-full bg-gray-100 text-gray-700 h-10 px-4 pr-10 rounded-full border-none focus:bg-white outline-none placeholder-gray-400 text-sm transition-all duration-300 focus:scale-[1.02] shadow-sm focus:shadow-md" />
-        <button
+
+        <!-- Spinner dentro del input cuando carga -->
+        <span *ngIf="isLoading" class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center">
+            <span class="w-4 h-4 border-2 border-blue-300 border-t-[#003399] rounded-full animate-spin"></span>
+        </span>
+
+        <!-- Ícono lupa cuando no carga -->
+        <button *ngIf="!isLoading"
             class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center text-gray-400 hover:text-blue-600"
             type="button">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -15,25 +23,49 @@
         </button>
     </form>
 
-    @if (results.length > 0 || isLoading) {
-    <section
+    <!-- Dropdown -->
+    <section *ngIf="showDropdown || isLoading"
         class="absolute top-full left-0 w-full bg-white border border-gray-100 rounded-lg shadow-xl mt-2 overflow-hidden"
         style="z-index: 9999;">
+
         <p
             class="px-4 py-2 text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
-            Resultados
+            Results
         </p>
+
         <ul class="max-h-60 overflow-y-auto px-4 py-2">
-            @if (isLoading) {
-            <li class="p-4 text-center text-blue-500 text-sm animate-pulse">Buscando...</li>
-            }
-            @for (city of results; track city.name) {
-            <li class="block my-1 py-2 px-2 cursor-pointer hover:bg-gray-50 rounded text-sm text-gray-700"
-                (mousedown)="selectCity(city)">
+
+            <!-- Cargando -->
+            <li *ngIf="isLoading" class="flex items-center gap-3 p-3 text-sm text-blue-500">
+                <span
+                    class="w-4 h-4 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin flex-shrink-0"></span>
+                Searching for cities...
+            </li>
+
+            <!-- Sin resultados -->
+            <li *ngIf="!isLoading && results.length === 0 && hasSearched"
+                class="flex items-center gap-2 p-3 text-sm text-gray-400 italic">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M3 10a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" />
+                    <path d="M21 21l-6 -6" />
+                </svg>
+                No cities found with that name
+            </li>
+
+            <!-- Resultados -->
+            <li *ngFor="let city of results" (mousedown)="selectCity(city)"
+                class="flex items-center gap-2 my-1 py-2 px-2 cursor-pointer hover:bg-blue-50 rounded text-sm text-gray-700 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" class="text-gray-400 flex-shrink-0">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                    <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" />
+                </svg>
                 {{ city.name }}{{ city.state ? ', ' + city.state : '' }} ({{ city.country }})
             </li>
-            }
+
         </ul>
     </section>
-    }
 </article>

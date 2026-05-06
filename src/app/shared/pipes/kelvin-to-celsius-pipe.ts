@@ -6,9 +6,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class KelvinToCelsiusPipe implements PipeTransform {
   transform(value: number): number {
-    if (value === undefined || value === null) {
-      return 0; 
-    }
+    if (value === undefined || value === null) return 0;
     return Math.round(value - 273.15);
   }
 }
