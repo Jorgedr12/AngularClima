@@ -1,6 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
+const envDir = path.join(__dirname, './src/environments');
+
+if (!fs.existsSync(envDir)) {
+    console.log('Creando la carpeta de entornos...');
+    fs.mkdirSync(envDir, { recursive: true });
+}
+
 const openWeatherMapApiKey = process.env.OPEN_WEATHER_MAP_API_KEY;
 
 const envConfigFile = `
@@ -10,11 +17,10 @@ export const environment = {
 };
 `;
 
-const targetPath = path.join(__dirname, './src/environments/environment.ts');
-const targetDevPath = path.join(__dirname, './src/environments/environment.development.ts');
+const targetPath = path.join(envDir, 'environment.ts');
+const targetDevPath = path.join(envDir, 'environment.development.ts');
 
-console.log('Generando archivo de entorno...');
+console.log('Generando archivos de entorno...');
 fs.writeFileSync(targetPath, envConfigFile);
-console.log(`Archivo generado en ${targetPath}`);
 fs.writeFileSync(targetDevPath, envConfigFile);
-console.log(`Archivo generado en ${targetDevPath}`);
+console.log('¡Archivos creados con éxito!');
