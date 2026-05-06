@@ -3,25 +3,41 @@
 </div>
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex flex-col"
+    class="fixed inset-y-0 left-0 z-40 w-64 bg-white border-r border-gray-200 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 lg:h-full flex flex-col"
     [class.-translate-x-full]="!isOpen" [class.translate-x-0]="isOpen">
 
-    <div class="flex flex-col items-center border-b border-gray-100 pb-4">
-        <img src="assets/logotipo.jpg" alt="Logo" class="w-12 h-12 mt-4 rounded-full shadow-sm"
-            onerror="this.style.display='none'">
-        <h2 class="text-center mt-2 text-lg font-bold text-[#003399]">WeatherTravel</h2>
+    <div class="flex flex-col items-center border-b border-gray-100 pb-4 pt-4 px-3 text-center">
+        <img src="Logotipo.jpg" alt="Logo" class="w-12 h-12 rounded-full shadow-sm" onerror="this.style.display='none'">
+        <h2 class="mt-2 text-lg font-bold text-[#003399]">WeatherTravel</h2>
+        <p class="text-[11px] text-gray-400 mt-1">Weather for your next adventure</p>
     </div>
 
     <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-6">
 
         <section>
-            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Favorites</h3>
+            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"
+                    class="text-red-400">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path
+                        d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" />
+                </svg>
+                Saved Destinations
+            </h3>
             <ul class="space-y-1">
                 <ng-container *ngIf="favorites$ | async as favs">
-                    <li *ngIf="favs.length === 0" class="text-xs text-gray-400 px-2 italic">No favorites</li>
+                    <li *ngIf="favs.length === 0" class="text-xs text-gray-400 px-2 italic">No saved destinations yet
+                    </li>
                     <li *ngFor="let city of favs">
                         <button type="button" (click)="selectCity(city)"
-                            class="w-full text-left flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            class="w-full text-left flex items-center gap-2 px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400 shrink-0">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
+                                <path
+                                    d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" />
+                            </svg>
                             <span class="truncate">{{ city.name }}</span>
                         </button>
                     </li>
@@ -30,13 +46,27 @@
         </section>
 
         <section>
-            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">History</h3>
+            <h3 class="px-2 text-xs font-bold text-gray-400 uppercase tracking-wider mb-2 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" class="text-gray-400">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M12 7v5l3 3" />
+                </svg>
+                Recent Destinations
+            </h3>
             <ul class="space-y-1">
                 <ng-container *ngIf="history$ | async as hist">
-                    <li *ngIf="hist.length === 0" class="text-xs text-gray-400 px-2 italic">No history</li>
-                    <li *ngFor="let city of hist | slice:0:10">
+                    <li *ngIf="hist.length === 0" class="text-xs text-gray-400 px-2 italic">No recent destinations</li>
+                    <li *ngFor="let city of hist | slice:0:5">
                         <button type="button" (click)="selectCity(city)"
-                            class="w-full text-left flex items-center px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            class="w-full text-left flex items-center gap-2 px-2 py-2 text-sm text-gray-700 rounded-lg hover:bg-blue-50 transition-colors">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" class="text-gray-400 shrink-0">
+                                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                                <path
+                                    d="M22 16.92v3a2 2 0 0 1 -2.18 2a19.79 19.79 0 0 1 -8.63 -3.07a19.5 19.5 0 0 1 -6 -6a19.79 19.79 0 0 1 -3.07 -8.67a2 2 0 0 1 1.99 -2.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1 -.45 2.11l-1.27 1.27a16 16 0 0 0 6 6l1.27 -1.27a2 2 0 0 1 2.11 -.45c.907.339 1.85.573 2.81.7a2 2 0 0 1 1.72 2.03z" />
+                            </svg>
                             <span class="truncate">{{ city.name }}</span>
                         </button>
                     </li>

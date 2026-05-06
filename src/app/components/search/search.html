@@ -5,12 +5,10 @@
             (blur)="onBlur()" (focus)="showDropdown = results.length > 0 || isLoading"
             class="w-full bg-gray-100 text-gray-700 h-10 px-4 pr-10 rounded-full border-none focus:bg-white outline-none placeholder-gray-400 text-sm transition-all duration-300 focus:scale-[1.02] shadow-sm focus:shadow-md" />
 
-        <!-- Spinner dentro del input cuando carga -->
         <span *ngIf="isLoading" class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center">
             <span class="w-4 h-4 border-2 border-blue-300 border-t-[#003399] rounded-full animate-spin"></span>
         </span>
 
-        <!-- Ícono lupa cuando no carga -->
         <button *ngIf="!isLoading"
             class="absolute right-0 top-0 h-10 w-10 flex items-center justify-center text-gray-400 hover:text-blue-600"
             type="button">
@@ -23,7 +21,6 @@
         </button>
     </form>
 
-    <!-- Dropdown -->
     <section *ngIf="showDropdown || isLoading"
         class="absolute top-full left-0 w-full bg-white border border-gray-100 rounded-lg shadow-xl mt-2 overflow-hidden"
         style="z-index: 9999;">
@@ -35,14 +32,12 @@
 
         <ul class="max-h-60 overflow-y-auto px-4 py-2">
 
-            <!-- Cargando -->
             <li *ngIf="isLoading" class="flex items-center gap-3 p-3 text-sm text-blue-500">
                 <span
-                    class="w-4 h-4 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin flex-shrink-0"></span>
+                    class="w-4 h-4 border-2 border-blue-200 border-t-blue-500 rounded-full animate-spin shrink-0"></span>
                 Searching for cities...
             </li>
 
-            <!-- Sin resultados -->
             <li *ngIf="!isLoading && results.length === 0 && hasSearched"
                 class="flex items-center gap-2 p-3 text-sm text-gray-400 italic">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -54,11 +49,10 @@
                 No cities found with that name
             </li>
 
-            <!-- Resultados -->
             <li *ngFor="let city of results" (mousedown)="selectCity(city)"
                 class="flex items-center gap-2 my-1 py-2 px-2 cursor-pointer hover:bg-blue-50 rounded text-sm text-gray-700 transition-colors">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                    stroke="currentColor" stroke-width="2" class="text-gray-400 flex-shrink-0">
+                    stroke="currentColor" stroke-width="2" class="text-gray-400 shrink-0">
                     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
                     <path d="M9 11a3 3 0 1 0 6 0a3 3 0 0 0 -6 0" />
                     <path d="M17.657 16.657l-4.243 4.243a2 2 0 0 1 -2.827 0l-4.244 -4.243a8 8 0 1 1 11.314 0z" />

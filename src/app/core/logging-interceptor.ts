@@ -3,11 +3,12 @@ import { tap } from 'rxjs/operators';
 
 export const loggingInterceptor: HttpInterceptorFn = (req, next) => {
   const start = Date.now();
-  console.log(`[HTTP] ${req.method} ${req.url}`);
+  const safeUrl = req.urlWithParams.replace(/appid=[^&]+/, 'appid=***');
+
   return next(req).pipe(
     tap({
-      next: () => console.log(`[HTTP] ✓ ${req.method} ${req.url} — ${Date.now() - start}ms`),
-      error: (err) => console.error(`[HTTP] ✗ ${req.method} ${req.url} — ${err.message}`),
+      next: () => console.log(`HTTP Success: ${req.method} ${safeUrl} (${Date.now() - start}ms)`),
+      error: (err) => console.error(`HTTP Error: ${req.method} ${safeUrl} — ${err.message}`),
     })
   );
 };

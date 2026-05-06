@@ -1,20 +1,20 @@
 <div class="bg-gray-50 h-screen flex overflow-hidden font-sans text-gray-800">
 
-  <app-sidebar [isOpen]="sidebarOpen" (citySelected)="onSidebarCitySelected($event)" (closed)="sidebarOpen = false">
+  <app-sidebar
+    [isOpen]="sidebarOpen"
+    (citySelected)="onSidebarCitySelected($event)"
+    (closed)="sidebarOpen = false">
   </app-sidebar>
 
   <main class="flex-1 flex flex-col relative min-w-0 bg-gray-50 overflow-hidden">
 
-    <header
-      class="h-16 bg-white border-b border-gray-200 flex items-center px-4 justify-between lg:justify-start shadow-sm z-20 gap-4">
-      <button class="lg:hidden p-2 text-gray-600 rounded-md hover:bg-gray-100 focus:outline-none" type="button"
-        (click)="sidebarOpen = true">
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center px-4 justify-between lg:justify-start shadow-sm z-20 gap-4">
+      <button class="lg:hidden p-2 text-gray-600 rounded-md hover:bg-gray-100 focus:outline-none"
+        type="button" (click)="sidebarOpen = true">
         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
           stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-          <path d="M4 6l16 0" />
-          <path d="M4 12l16 0" />
-          <path d="M4 18l16 0" />
+          <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+          <path d="M4 6l16 0"/><path d="M4 12l16 0"/><path d="M4 18l16 0"/>
         </svg>
       </button>
 
@@ -32,12 +32,12 @@
             <span class="text-[#003399]">{{ cityName || 'Select or search a city' }}</span>
           </h1>
           <button *ngIf="currentWeather" type="button" (click)="toggleFavorite()"
-            class="p-2 rounded-full hover:bg-gray-100 transition-colors" [class.text-red-500]="isFavorite"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors"
+            [class.text-red-500]="isFavorite"
             [class.text-gray-300]="!isFavorite">
             <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="currentColor">
-              <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-              <path
-                d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z" />
+              <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+              <path d="M6.979 3.074a6 6 0 0 1 4.988 1.425l.037 .033l.034 -.03a6 6 0 0 1 4.733 -1.44l.246 .036a6 6 0 0 1 3.364 10.008l-.18 .185l-.048 .041l-7.45 7.379a1 1 0 0 1 -1.313 .082l-.094 -.082l-7.493 -7.422a6 6 0 0 1 3.176 -10.215z"/>
             </svg>
           </button>
         </div>
@@ -46,9 +46,8 @@
           class="p-3 bg-red-50 text-red-600 rounded-lg text-sm border border-red-100 flex items-center gap-2">
           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
             stroke="currentColor" stroke-width="2">
-            <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-            <path
-              d="M12 9v4m0 4h.01M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z" />
+            <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+            <path d="M12 9v4m0 4h.01M10.363 3.591l-8.106 13.534a1.914 1.914 0 0 0 1.636 2.871h16.214a1.914 1.914 0 0 0 1.636 -2.87l-8.106 -13.536a1.914 1.914 0 0 0 -3.274 0z"/>
           </svg>
           {{ errorMsg }}
         </p>
@@ -58,13 +57,16 @@
           <p class="text-sm text-gray-400 font-medium">Fetching weather data...</p>
         </div>
 
-        <app-weather-card *ngIf="currentWeather && !isLoading" [weather]="currentWeather"
-          [recommendations]="recommendations" [isFavorite]="isFavorite" (favoriteToggled)="toggleFavorite()">
+        <app-weather-card
+          *ngIf="currentWeather && !isLoading"
+          [weather]="currentWeather"
+          [todayForecast]="forecastDays[0]"
+          [recommendations]="recommendations"
+          [isFavorite]="isFavorite"
+          (favoriteToggled)="toggleFavorite()">
         </app-weather-card>
 
-        <!-- Pronóstico -->
-        <app-forecast *ngIf="!isLoading" [days]="forecastDays">
-        </app-forecast>
+        <app-forecast *ngIf="!isLoading" [days]="forecastDays"></app-forecast>
 
       </div>
     </section>

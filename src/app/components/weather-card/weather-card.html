@@ -1,6 +1,16 @@
 <article class="bg-white rounded-2xl shadow-sm border border-gray-200 overflow-hidden flex flex-col md:flex-row">
 
     <div class="flex-1 p-6 flex flex-col items-center md:items-start text-center md:text-left">
+
+        <p class="text-sm text-[#003399] font-medium mb-3 flex items-center gap-1">
+            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" class="flex-shrink-0">
+                <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                <path d="M16 10h4a2 2 0 0 1 0 4h-4l-4 7h-3l2 -7h-4l-2 2h-3l2 -4l-2 -4h3l2 2h4l-2 -7h3z" />
+            </svg>
+            Planning a trip to {{ weather.name }}?
+        </p>
+
         <span class="px-2 py-1 bg-blue-50 text-[#003399] text-xs font-bold rounded-md uppercase tracking-wider mb-4">
             Current Weather
         </span>
@@ -21,9 +31,9 @@
             </div>
         </div>
 
-        <div class="flex flex-wrap gap-3 mt-6 w-full md:w-auto">
+        <div class="flex flex-wrap gap-3 mt-6 w-full md:w-full lg:w-full justify-center">
             <div class="flex-1 bg-gray-50 p-3 rounded-xl flex flex-col items-center min-w-22.5">
-                <span class="text-xs text-gray-400 font-bold uppercase">Feels Like</span>
+                <span class="text-xs text-gray-400 font-bold uppercase">Feels like</span>
                 <span class="text-lg font-bold text-[#003399] mt-1">{{ weather.main.feels_like | kelvinToCelsius
                     }}°</span>
             </div>
@@ -35,15 +45,53 @@
                 <span class="text-xs text-gray-400 font-bold uppercase">Wind</span>
                 <span class="text-lg font-bold text-[#003399] mt-1">{{ getWindKmh(weather.wind.speed) }}</span>
             </div>
+            <div *ngIf="todayForecast" class="flex-1 bg-gray-50 p-3 rounded-xl flex flex-col items-center min-w-22.5">
+                <span class="text-xs text-gray-400 font-bold uppercase">Today Max</span>
+                <span class="text-lg font-bold text-red-400 mt-1">{{ todayForecast.tempMaxK | kelvinToCelsius }}°</span>
+            </div>
+            <div *ngIf="todayForecast" class="flex-1 bg-gray-50 p-3 rounded-xl flex flex-col items-center min-w-22.5">
+                <span class="text-xs text-gray-400 font-bold uppercase">Today Min</span>
+                <span class="text-lg font-bold text-blue-400 mt-1">{{ todayForecast.tempMinK | kelvinToCelsius
+                    }}°</span>
+            </div>
         </div>
     </div>
 
     <aside
-        class="md:w-72 bg-blue-50/50 p-6 border-t md:border-t-0 md:border-l border-gray-100 flex flex-col justify-center">
-        <h3 class="font-bold text-sm text-gray-500 uppercase mb-3">Recommendations</h3>
-        <div class="bg-white p-3 rounded-lg shadow-sm border border-blue-100 text-sm text-gray-600 space-y-1">
-            <p *ngFor="let rec of recommendations">• {{ rec }}</p>
+        class="md:w-72 bg-blue-50/50 p-6 border-t md:border-t-0 md:border-l border-gray-100 flex flex-col gap-4 justify-center">
+
+        <div>
+            <h3 class="font-bold text-sm text-gray-500 uppercase mb-3 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M8 9h8m-8 4h6" />
+                    <path
+                        d="M18 4a3 3 0 0 1 3 3v8a3 3 0 0 1 -3 3h-5l-5 3v-3h-2a3 3 0 0 1 -3 -3v-8a3 3 0 0 1 3 -3h12z" />
+                </svg>
+                Travel Tips
+            </h3>
+            <div class="bg-white p-3 rounded-lg shadow-sm border border-blue-100 text-sm text-gray-600 space-y-1">
+                <p *ngFor="let rec of recommendations">• {{ rec }}</p>
+            </div>
         </div>
+
+        <div>
+            <h3 class="font-bold text-sm text-gray-500 uppercase mb-3 flex items-center gap-1">
+                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2">
+                    <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+                    <path d="M12 12m-9 0a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+                    <path d="M12 7v5l3 3" />
+                </svg>
+                Best Time to Visit
+            </h3>
+            <div class="bg-white p-3 rounded-lg shadow-sm border border-blue-100 text-sm text-gray-600">
+                <p class="font-semibold text-[#003399]">{{ bestTime.label }}</p>
+                <p class="text-xs text-gray-400 mt-1">{{ bestTime.desc }}</p>
+            </div>
+        </div>
+
     </aside>
 
 </article>

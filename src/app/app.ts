@@ -43,7 +43,9 @@ export class App {
   }
 
   toggleFavorite() {
-    if (!this.cityObj) return;
+    if (!this.cityObj) {
+      return;
+    }
     this.isFavorite = this.weatherService.toggleFavorite(this.cityObj);
   }
 
@@ -82,21 +84,28 @@ export class App {
     });
   }
 
-  // Guarda temperaturas en Kelvin — la pipe las convierte en el template
   private buildDailyForecast(list: any[]): any[] {
-    if (!list) return [];
+    if (!list) {
+      return [];
+    }
     const grouped: { [date: string]: any[] } = {};
     for (const item of list) {
       const date = item.dt_txt.split(' ')[0];
-      if (!grouped[date]) grouped[date] = [];
+      if (!grouped[date]) {
+        grouped[date] = [];
+      }
       grouped[date].push(item);
     }
     return Object.keys(grouped).slice(0, 5).map(date => {
       const dayData = grouped[date];
       let maxK = -Infinity, minK = Infinity;
       for (const item of dayData) {
-        if (item.main.temp_max > maxK) maxK = item.main.temp_max;
-        if (item.main.temp_min < minK) minK = item.main.temp_min;
+        if (item.main.temp_max > maxK) {
+          maxK = item.main.temp_max;
+        }
+        if (item.main.temp_min < minK) {
+          minK = item.main.temp_min;
+        }
       }
       const mid = dayData[Math.floor(dayData.length / 2)];
       const dateObj = new Date(mid.dt * 1000);
@@ -114,13 +123,21 @@ export class App {
     const isDay = icon.includes('d');
     const group = Math.floor(weatherId / 100);
     switch (group) {
-      case 2: return isDay ? ['Take shelter indoors', 'Avoid open areas'] : ['Stay indoors or at the hotel', 'Dine inside'];
+      case 2: return isDay
+        ? ['Postpone outdoor excursions', 'Visit indoor attractions', 'Keep your luggage dry']
+        : ['Stay at the hotel tonight', 'Book a restaurant indoors', 'Great night to plan tomorrow\'s trips'];
       case 3:
-      case 5: return isDay ? ['Bring an umbrella', 'Visit museums or cinemas', 'Wear waterproof clothing'] : ['Rest night indoors', 'Avoid driving'];
-      case 6: return isDay ? ['Wear thermal clothing', 'Walk carefully', 'Warm drinks recommended'] : ['Keep warm', 'Have a hot meal', 'Avoid going outside'];
-      case 7: return ['Low visibility', 'Drive with caution', 'Use high beams'];
-      case 8: return isDay ? ['Great for outdoor activities', 'Go for a walk or visit a park'] : ['Dine on a terrace', 'Stargazing night', 'Evening stroll'];
-      default: return ['Enjoy your day regardless of the weather'];
+      case 5: return isDay
+        ? ['Pack a rain jacket in your bag', 'Visit local museums or galleries', 'Great day for indoor food tours']
+        : ['Cozy night at a local restaurant', 'Avoid renting a scooter or bike', 'Check tomorrow\'s forecast before booking'];
+      case 6: return isDay
+        ? ['Pack thermal layers for sightseeing', 'Warm up at a local café', 'Great day for indoor landmarks']
+        : ['Stay warm at the hotel', 'Try local hot cuisine tonight', 'Avoid late-night outdoor walks'];
+      case 7: return ['Delay travel if possible', 'Drive carefully to your destination', 'Allow extra time for transfers'];
+      case 8: return isDay
+        ? ['Perfect day for city exploration', 'Book outdoor tours and activities', 'Great weather for travel photos']
+        : ['Enjoy a rooftop dinner', 'Perfect night for a walking tour', 'Great conditions for stargazing'];
+      default: return ['Check conditions before booking outdoor tours'];
     }
   }
 }

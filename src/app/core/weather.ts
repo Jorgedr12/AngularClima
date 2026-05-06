@@ -26,13 +26,13 @@ export class Weather {
 
   // Devuelve Kelvin (sin units=metric) para que la pipe lo convierta
   getCurrentWeather(lat: number, lon: number): Observable<any> {
-    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=es`;
+    const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=en`;
     return this.http.get<any>(url).pipe(catchError((e) => this.handleError(e)));
   }
 
   // Devuelve Kelvin también para consistencia con la pipe
   getForecast(lat: number, lon: number): Observable<any> {
-    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=es`;
+    const url = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&appid=${this.API_KEY}&lang=en`;
     return this.http.get<any>(url).pipe(catchError((e) => this.handleError(e)));
   }
 
