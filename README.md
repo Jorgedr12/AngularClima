@@ -1,59 +1,77 @@
-# AngularClima
+# WeatherTravel
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 21.2.6.
+**Live site:** [Visit WeatherTravel](https://weathertravel.vercel.app/)
 
-## Development server
+**WeatherTravel** is a responsive weather forecast web application built with Angular, designed for travelers who want to check weather conditions before and during their trips.
 
-To start a local development server, run:
+## Features
 
-```bash
-ng serve
+- **Smart Search:** City autocomplete with debounce optimization and real-time feedback.
+- **Travel-Oriented Forecast:** Current weather with travel tips, best time to visit rating, and a 5-day forecast.
+- **Data Persistence:** Favorites and search history stored in `localStorage`.
+- **Responsive Design:** Adaptive layout with a dynamic sidebar for both mobile and desktop.
+- **Error Handling:** Friendly messages for no connection, city not found, and invalid API key.
+
+## Technologies
+
+- **Angular 21** (Standalone Components)
+- **Tailwind CSS**
+- **TypeScript**
+- **OpenWeatherMap API**
+
+## Architecture
+
+```
+src/app/
+├── core/
+│   ├── weather.ts               # HTTP service (search, current weather, forecast)
+│   └── logging-interceptor.ts   # HTTP logging interceptor
+├── shared/pipes/
+│   └── kelvin-to-celsius-pipe.ts
+└── components/
+    ├── search/                  # Autocomplete search input
+    ├── sidebar/                 # Saved & recent destinations
+    ├── weather-card/            # Current weather + travel tips
+    └── fore-cast/                # 5-day forecast grid
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+## Setup
 
-## Code scaffolding
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Jorgedr12/AngularClima
+   cd weather-travel
+   ```
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
 
-```bash
-ng generate component component-name
-```
+3. **Configure your API Key:**
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+   - Sign up at [OpenWeatherMap](https://openweathermap.org/) and get your free API key.
+   - Create the file `src/environments/environment.development.ts`.
+   - Replace the placeholder with your key:
+     ```typescript
+     export const environment = {
+       openWeatherMapApiKey: 'YOUR_API_KEY_HERE'
+     };
+     ```
 
-```bash
-ng generate --help
-```
+4. **Run the development server:**
+   ```bash
+   ng serve
+   ```
+   Open your browser at `http://localhost:4200/`
 
-## Building
-
-To build the project run:
+## Build
 
 ```bash
 ng build
 ```
+Output will be in the `dist/` directory, optimized for production.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+## Preview
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+![WeatherTravel preview](public/Demostración.png)
